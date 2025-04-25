@@ -4,6 +4,9 @@ import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
+ * This class defines a condition met when the MCP server is enabled and the STDIO
+ * Transport is disabled.
+ *
  * @since 1.0.0
  * @author YunKui Lu
  */
