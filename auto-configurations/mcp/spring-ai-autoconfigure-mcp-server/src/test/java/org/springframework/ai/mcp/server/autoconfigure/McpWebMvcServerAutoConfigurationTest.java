@@ -53,4 +53,14 @@ class McpWebMvcServerAutoConfigurationTest {
 			.run(context -> assertThat(context).doesNotHaveBean(WebMvcSseServerTransportProvider.class));
 	}
 
+
+	@Test
+	void serverDisableConfiguration() {
+		this.contextRunner.withPropertyValues("spring.ai.mcp.server.enabled=false")
+				.run(context -> {
+					assertThat(context).doesNotHaveBean(WebMvcSseServerTransportProvider.class);
+					assertThat(context).doesNotHaveBean(RouterFunction.class);
+				});
+	}
+
 }
