@@ -223,6 +223,11 @@ public class OpenAiApi {
 		return chatCompletionStream(chatRequest, new LinkedMultiValueMap<>());
 	}
 
+	public Flux<ChatCompletionChunk> chatCompletionStream(ChatCompletionRequest chatRequest,
+			MultiValueMap<String, String> additionalHttpHeader) {
+		return chatCompletionStream(chatRequest, additionalHttpHeader, null);
+	}
+
 	/**
 	 * Creates a streaming chat response for the given chat conversation.
 	 * @param chatRequest The chat completion request. Must have the stream property set
@@ -232,7 +237,7 @@ public class OpenAiApi {
 	 * @return Returns a {@link Flux} stream from chat completion chunks.
 	 */
 	public Flux<ChatCompletionChunk> chatCompletionStream(ChatCompletionRequest chatRequest,
-			MultiValueMap<String, String> additionalHttpHeader, Map<String, Object> additionalRequestBody) {
+			MultiValueMap<String, String> additionalHttpHeader, @Nullable Map<String, Object> additionalRequestBody) {
 
 		Assert.notNull(chatRequest, "The request body can not be null.");
 		Assert.isTrue(chatRequest.stream(), "Request must set the stream property to true.");
@@ -242,7 +247,7 @@ public class OpenAiApi {
 		return this.webClient.post()
 			.uri(this.completionsPath)
 			.headers(headers -> headers.addAll(additionalHttpHeader))
-			.body(Mono.just(chatRequest), ChatCompletionRequest.class)
+			.bodyValue(mergeRequestBody(chatRequest, additionalRequestBody))
 			.retrieve()
 			.bodyToFlux(String.class)
 			// cancels the flux stream after the "[DONE]" is received.
