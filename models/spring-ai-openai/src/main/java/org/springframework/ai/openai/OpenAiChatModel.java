@@ -196,7 +196,8 @@ public class OpenAiChatModel implements ChatModel {
 			.observe(() -> {
 
 				ResponseEntity<ChatCompletion> completionEntity = this.retryTemplate
-					.execute(ctx -> this.openAiApi.chatCompletionEntity(request, getAdditionalHttpHeaders(prompt)));
+						.execute(ctx -> this.openAiApi.chatCompletionEntity(request,
+								getAdditionalHttpHeaders(prompt), getAdditionalRequestBody(prompt)));
 
 				var chatCompletion = completionEntity.getBody();
 
@@ -283,7 +284,7 @@ public class OpenAiChatModel implements ChatModel {
 			}
 
 			Flux<OpenAiApi.ChatCompletionChunk> completionChunks = this.openAiApi.chatCompletionStream(request,
-					getAdditionalHttpHeaders(prompt));
+					getAdditionalHttpHeaders(prompt), getAdditionalRequestBody(prompt));
 
 			// For chunked responses, only the first chunk contains the choice role.
 			// The rest of the chunks with same ID share the same role.
@@ -404,6 +405,14 @@ public class OpenAiChatModel implements ChatModel {
 				headers.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> List.of(e.getValue()))));
 	}
 
+	private Map<String, Object> getAdditionalRequestBody(Prompt prompt) {
+		Map<String, Object> body = new HashMap<>(this.defaultOptions.getExtraBody());
+		if (prompt.getOptions() != null && prompt.getOptions() instanceof OpenAiChatOptions chatOptions) {
+			body.putAll(chatOptions.getExtraBody());
+		}
+		return body;
+	}
+
 	private Generation buildGeneration(Choice choice, Map<String, Object> metadata, ChatCompletionRequest request) {
 		List<AssistantMessage.ToolCall> toolCalls = choice.message().toolCalls() == null ? List.of()
 				: choice.message()
@@ -517,6 +526,8 @@ public class OpenAiChatModel implements ChatModel {
 
 			requestOptions.setHttpHeaders(
 					mergeHttpHeaders(runtimeOptions.getHttpHeaders(), this.defaultOptions.getHttpHeaders()));
+			requestOptions
+				.setExtraBody(mergeExtraBody(runtimeOptions.getExtraBody(), this.defaultOptions.getExtraBody()));
 			requestOptions.setInternalToolExecutionEnabled(
 					ModelOptionsUtils.mergeOption(runtimeOptions.getInternalToolExecutionEnabled(),
 							this.defaultOptions.getInternalToolExecutionEnabled()));
@@ -529,6 +540,7 @@ public class OpenAiChatModel implements ChatModel {
 		}
 		else {
 			requestOptions.setHttpHeaders(this.defaultOptions.getHttpHeaders());
+			requestOptions.setExtraBody(this.defaultOptions.getExtraBody());
 			requestOptions.setInternalToolExecutionEnabled(this.defaultOptions.getInternalToolExecutionEnabled());
 			requestOptions.setToolNames(this.defaultOptions.getToolNames());
 			requestOptions.setToolCallbacks(this.defaultOptions.getToolCallbacks());
@@ -545,6 +557,13 @@ public class OpenAiChatModel implements ChatModel {
 		var mergedHttpHeaders = new HashMap<>(defaultHttpHeaders);
 		mergedHttpHeaders.putAll(runtimeHttpHeaders);
 		return mergedHttpHeaders;
+	}
+
+	private Map<String, Object> mergeExtraBody(Map<String, Object> runtimeExtraBody,
+			Map<String, Object> defaultExtraBody) {
+		var mergedExtraBody = new HashMap<>(defaultExtraBody);
+		mergedExtraBody.putAll(runtimeExtraBody);
+		return mergedExtraBody;
 	}
 
 	/**

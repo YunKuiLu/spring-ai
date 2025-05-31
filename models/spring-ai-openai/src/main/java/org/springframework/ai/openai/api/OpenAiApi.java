@@ -42,6 +42,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -174,6 +175,21 @@ public class OpenAiApi {
 	 */
 	public ResponseEntity<ChatCompletion> chatCompletionEntity(ChatCompletionRequest chatRequest,
 			MultiValueMap<String, String> additionalHttpHeader) {
+		return chatCompletionEntity(chatRequest, additionalHttpHeader, null);
+	}
+
+	/**
+	 * Creates a model response for the given chat conversation.
+	 * @param chatRequest The chat completion request.
+	 * @param additionalHttpHeader Optional, additional HTTP headers to be added to the
+	 * request.
+	 * @param additionalRequestBody Optional, additional request body to be added to the
+	 * request.
+	 * @return Entity response with {@link ChatCompletion} as a body and HTTP status code
+	 * and headers.
+	 */
+	public ResponseEntity<ChatCompletion> chatCompletionEntity(ChatCompletionRequest chatRequest,
+			MultiValueMap<String, String> additionalHttpHeader, @Nullable Map<String, Object> additionalRequestBody) {
 
 		Assert.notNull(chatRequest, "The request body can not be null.");
 		Assert.isTrue(!chatRequest.stream(), "Request must set the stream property to false.");
@@ -182,9 +198,19 @@ public class OpenAiApi {
 		return this.restClient.post()
 			.uri(this.completionsPath)
 			.headers(headers -> headers.addAll(additionalHttpHeader))
-			.body(chatRequest)
+			.body(mergeRequestBody(chatRequest, additionalRequestBody))
 			.retrieve()
 			.toEntity(ChatCompletion.class);
+	}
+
+	private Object mergeRequestBody(ChatCompletionRequest chatRequest,
+			@Nullable Map<String, Object> additionalRequestBody) {
+		if (additionalRequestBody != null && !additionalRequestBody.isEmpty()) {
+			Map<String, Object> requestBody = ModelOptionsUtils.objectToMap(chatRequest);
+			requestBody.putAll(additionalRequestBody);
+			return requestBody;
+		}
+		return chatRequest;
 	}
 
 	/**
@@ -206,7 +232,7 @@ public class OpenAiApi {
 	 * @return Returns a {@link Flux} stream from chat completion chunks.
 	 */
 	public Flux<ChatCompletionChunk> chatCompletionStream(ChatCompletionRequest chatRequest,
-			MultiValueMap<String, String> additionalHttpHeader) {
+			MultiValueMap<String, String> additionalHttpHeader, Map<String, Object> additionalRequestBody) {
 
 		Assert.notNull(chatRequest, "The request body can not be null.");
 		Assert.isTrue(chatRequest.stream(), "Request must set the stream property to true.");

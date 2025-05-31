@@ -227,6 +227,9 @@ public class OpenAiChatOptions implements ToolCallingChatOptions {
 	@JsonIgnore
 	private Map<String, Object> toolContext = new HashMap<>();
 
+	@JsonIgnore
+	private Map<String, Object> extraBody = new HashMap<>();
+
 	// @formatter:on
 
 	public static Builder builder() {
@@ -261,6 +264,7 @@ public class OpenAiChatOptions implements ToolCallingChatOptions {
 					fromOptions.getToolCallbacks() != null ? new ArrayList<>(fromOptions.getToolCallbacks()) : null)
 			.toolNames(fromOptions.getToolNames() != null ? new HashSet<>(fromOptions.getToolNames()) : null)
 			.httpHeaders(fromOptions.getHttpHeaders() != null ? new HashMap<>(fromOptions.getHttpHeaders()) : null)
+			.extraBody(fromOptions.getExtraBody() != null ? new HashMap<>(fromOptions.getExtraBody()) : null)
 			.internalToolExecutionEnabled(fromOptions.getInternalToolExecutionEnabled())
 			.toolContext(fromOptions.getToolContext() != null ? new HashMap<>(fromOptions.getToolContext()) : null)
 			.store(fromOptions.getStore())
@@ -512,6 +516,14 @@ public class OpenAiChatOptions implements ToolCallingChatOptions {
 		this.httpHeaders = httpHeaders;
 	}
 
+	public Map<String, Object> getExtraBody() {
+		return this.extraBody;
+	}
+
+	public void setExtraBody(Map<String, Object> extraBody) {
+		this.extraBody = extraBody;
+	}
+
 	@Override
 	@JsonIgnore
 	public Integer getTopK() {
@@ -572,7 +584,7 @@ public class OpenAiChatOptions implements ToolCallingChatOptions {
 		return Objects.hash(this.model, this.frequencyPenalty, this.logitBias, this.logprobs, this.topLogprobs,
 				this.maxTokens, this.maxCompletionTokens, this.n, this.presencePenalty, this.responseFormat,
 				this.streamOptions, this.seed, this.stop, this.temperature, this.topP, this.tools, this.toolChoice,
-				this.user, this.parallelToolCalls, this.toolCallbacks, this.toolNames, this.httpHeaders,
+				this.user, this.parallelToolCalls, this.toolCallbacks, this.toolNames, this.httpHeaders, this.extraBody,
 				this.internalToolExecutionEnabled, this.toolContext, this.outputModalities, this.outputAudio,
 				this.store, this.metadata, this.reasoningEffort, this.webSearchOptions);
 	}
@@ -602,6 +614,7 @@ public class OpenAiChatOptions implements ToolCallingChatOptions {
 				&& Objects.equals(this.toolNames, other.toolNames)
 				&& Objects.equals(this.httpHeaders, other.httpHeaders)
 				&& Objects.equals(this.toolContext, other.toolContext)
+				&& Objects.equals(this.extraBody, other.extraBody)
 				&& Objects.equals(this.internalToolExecutionEnabled, other.internalToolExecutionEnabled)
 				&& Objects.equals(this.outputModalities, other.outputModalities)
 				&& Objects.equals(this.outputAudio, other.outputAudio) && Objects.equals(this.store, other.store)
@@ -777,6 +790,11 @@ public class OpenAiChatOptions implements ToolCallingChatOptions {
 			else {
 				this.options.toolContext.putAll(toolContext);
 			}
+			return this;
+		}
+
+		public Builder extraBody(Map<String, Object> extraBody) {
+			this.options.extraBody = extraBody;
 			return this;
 		}
 
