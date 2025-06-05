@@ -17,7 +17,6 @@
 package org.springframework.ai.model.openai.autoconfigure;
 
 import io.micrometer.observation.ObservationRegistry;
-
 import org.springframework.ai.chat.observation.ChatModelObservationConvention;
 import org.springframework.ai.model.SimpleApiKey;
 import org.springframework.ai.model.SpringAIModelProperties;
@@ -63,6 +62,7 @@ import static org.springframework.ai.model.openai.autoconfigure.OpenAIAutoConfig
 @ImportAutoConfiguration(classes = { SpringAiRetryAutoConfiguration.class, RestClientAutoConfiguration.class,
 		WebClientAutoConfiguration.class, ToolCallingAutoConfiguration.class })
 public class OpenAiChatAutoConfiguration {
+
 
 	@Bean
 	@ConditionalOnMissingBean
