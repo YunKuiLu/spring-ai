@@ -272,7 +272,7 @@ public class OpenAiChatModel implements ChatModel {
 			ChatCompletionRequest request = createRequest(prompt, true);
 
 			if (request.outputModalities() != null) {
-				if (request.outputModalities().stream().anyMatch(m -> m.equals("audio"))) {
+				if (request.outputModalities().stream().anyMatch(m -> m.equals(OpenAiApi.OutputModality.AUDIO))) {
 					logger.warn("Audio output is not supported for streaming requests. Removing audio output.");
 					throw new IllegalArgumentException("Audio output is not supported for streaming requests.");
 				}
