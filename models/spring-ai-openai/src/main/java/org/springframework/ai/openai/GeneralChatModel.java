@@ -7,6 +7,7 @@ import io.micrometer.observation.ObservationConvention;
 import io.micrometer.observation.ObservationRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ai.openai.metadata.support.OpenAiResponseHeaderExtractor;
 import reactor.core.publisher.Flux;
 
 import org.springframework.ai.chat.metadata.EmptyUsage;
@@ -131,7 +132,7 @@ public abstract class GeneralChatModel<O extends ChatOptions, R, P, M, C> implem
 		return response;
 	}
 
-	abstract AiApi getAiApi();
+	abstract Api getApi();
 
 	protected RetryTemplate getRestTemplate() {
 		return RetryUtils.DEFAULT_RETRY_TEMPLATE;
