@@ -184,4 +184,101 @@ class DeepSeekChatModelFunctionCallingIT {
 		assertThat(chatResponse.getMetadata().getUsage().getTotalTokens()).isLessThan(700).isGreaterThan(280);
 	}
 
+	@Test
+	void reasonerModelFunctionCallTest() {
+
+		UserMessage userMessage = new UserMessage(
+				"What's the weather like in San Francisco, Tokyo, and Paris? Return the temperature in Celsius.");
+
+		List<Message> messages = new ArrayList<>(List.of(userMessage));
+
+		var promptOptions = DeepSeekChatOptions.builder()
+				.model(DeepSeekApi.ChatModel.DEEPSEEK_REASONER.getValue())
+				.toolCallbacks(List.of(FunctionToolCallback.builder("getCurrentWeather", new MockWeatherService())
+						.description("Get the weather in location")
+						.inputType(MockWeatherService.Request.class)
+						.build()))
+				.build();
+
+		ChatResponse response = this.chatModel.call(new Prompt(messages, promptOptions));
+
+		logger.info("Response: {}", response);
+
+		assertThat(response.getResult().getOutput().getText()).contains("30", "10", "15");
+	}
+
+	@Test
+	void reasonerModelStreamFunctionCallTest() {
+
+		UserMessage userMessage = new UserMessage(
+				"What's the weather like in San Francisco, Tokyo, and Paris? Return the temperature in Celsius.");
+
+		List<Message> messages = new ArrayList<>(List.of(userMessage));
+
+		var promptOptions = DeepSeekChatOptions.builder()
+				.model(DeepSeekApi.ChatModel.DEEPSEEK_REASONER.getValue())
+				.toolCallbacks(List.of(FunctionToolCallback.builder("getCurrentWeather", new MockWeatherService())
+						.description("Get the weather in location")
+						.inputType(MockWeatherService.Request.class)
+						.build()))
+				.build();
+
+		Flux<ChatResponse> response = this.chatModel.stream(new Prompt(messages, promptOptions));
+
+		String content = response.collectList()
+				.block()
+				.stream()
+				.map(ChatResponse::getResults)
+				.flatMap(List::stream)
+				.map(Generation::getOutput)
+				.map(AssistantMessage::getText)
+				.filter(Objects::nonNull)
+				.collect(Collectors.joining());
+		logger.info("Response: {}", content);
+
+		assertThat(content).contains("30", "10", "15");
+	}
+
+	@Test
+	void reasonerModelToolFunctionCallWithUsage() {
+		var promptOptions = DeepSeekChatOptions.builder()
+				.model(DeepSeekApi.ChatModel.DEEPSEEK_REASONER.getValue())
+				.tools(Arrays.asList(FUNCTION_TOOL))
+				.toolCallbacks(List.of(FunctionToolCallback.builder("getCurrentWeather", new MockWeatherService())
+						.description("Get the weather in location")
+						.inputType(MockWeatherService.Request.class)
+						.build()))
+				.build();
+		Prompt prompt = new Prompt("What's the weather like in San Francisco? Return the temperature in Celsius.",
+				promptOptions);
+
+		ChatResponse chatResponse = this.chatModel.call(prompt);
+		assertThat(chatResponse).isNotNull();
+		assertThat(chatResponse.getResult().getOutput());
+		assertThat(chatResponse.getResult().getOutput().getText()).contains("San Francisco");
+		assertThat(chatResponse.getResult().getOutput().getText()).contains("30");
+
+		// the total token is first chat and tool call request
+		assertThat(chatResponse.getMetadata().getUsage().getTotalTokens()).isLessThan(700).isGreaterThan(280);
+	}
+
+	@Test
+	void reasonerModelTestStreamFunctionCallUsage() {
+		var promptOptions = DeepSeekChatOptions.builder()
+				.model(DeepSeekApi.ChatModel.DEEPSEEK_REASONER.getValue())
+				.tools(Arrays.asList(FUNCTION_TOOL))
+				.toolCallbacks(List.of(FunctionToolCallback.builder("getCurrentWeather", new MockWeatherService())
+						.description("Get the weather in location")
+						.inputType(MockWeatherService.Request.class)
+						.build()))
+				.build();
+		Prompt prompt = new Prompt("What's the weather like in San Francisco? Return the temperature in Celsius.",
+				promptOptions);
+
+		ChatResponse chatResponse = this.chatModel.stream(prompt).blockLast();
+		assertThat(chatResponse).isNotNull();
+		assertThat(chatResponse.getMetadata()).isNotNull();
+		assertThat(chatResponse.getMetadata().getUsage()).isNotNull();
+		assertThat(chatResponse.getMetadata().getUsage().getTotalTokens()).isLessThan(700).isGreaterThan(280);
+	}
 }
