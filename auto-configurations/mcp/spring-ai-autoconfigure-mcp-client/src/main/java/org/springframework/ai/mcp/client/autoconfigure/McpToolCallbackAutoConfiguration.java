@@ -24,6 +24,10 @@ import io.modelcontextprotocol.client.McpSyncClient;
 import org.springframework.ai.mcp.AsyncMcpToolCallbackProvider;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import org.springframework.ai.mcp.client.autoconfigure.properties.McpClientCommonProperties;
+import org.springframework.ai.mcp.client.autoconfigure.tool.filter.DefaultMcpAsyncClientToolCallFilter;
+import org.springframework.ai.mcp.client.autoconfigure.tool.filter.DefaultMcpSyncClientToolCallFilter;
+import org.springframework.ai.mcp.client.autoconfigure.tool.filter.McpAsyncClientToolCallFilter;
+import org.springframework.ai.mcp.client.autoconfigure.tool.filter.McpSyncClientToolCallFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AllNestedConditions;
@@ -51,16 +55,32 @@ public class McpToolCallbackAutoConfiguration {
 	@Bean
 	@ConditionalOnProperty(prefix = McpClientCommonProperties.CONFIG_PREFIX, name = "type", havingValue = "SYNC",
 			matchIfMissing = true)
-	public SyncMcpToolCallbackProvider mcpToolCallbacks(ObjectProvider<List<McpSyncClient>> syncMcpClients) {
+	public SyncMcpToolCallbackProvider mcpToolCallbacks(ObjectProvider<List<McpSyncClient>> syncMcpClients,
+														ObjectProvider<McpSyncClientToolCallFilter> mcpToolCallFilterProvider) {
 		List<McpSyncClient> mcpClients = syncMcpClients.stream().flatMap(List::stream).toList();
-		return new SyncMcpToolCallbackProvider(mcpClients);
+		McpSyncClientToolCallFilter mcpToolCallFilter = mcpToolCallFilterProvider.getIfAvailable(DefaultMcpSyncClientToolCallFilter::new);
+		return new SyncMcpToolCallbackProvider(mcpToolCallFilter, mcpClients);
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = McpClientCommonProperties.CONFIG_PREFIX, name = "type", havingValue = "SYNC")
+	public McpSyncClientToolCallFilter mcpSyncClientToolCallFilter() {
+		return new DefaultMcpSyncClientToolCallFilter();
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = McpClientCommonProperties.CONFIG_PREFIX, name = "type", havingValue = "ASYNC")
-	public AsyncMcpToolCallbackProvider mcpAsyncToolCallbacks(ObjectProvider<List<McpAsyncClient>> mcpClientsProvider) {
+	public AsyncMcpToolCallbackProvider mcpAsyncToolCallbacks(ObjectProvider<List<McpAsyncClient>> mcpClientsProvider,
+															  ObjectProvider<McpAsyncClientToolCallFilter> mcpToolCallFilterProvider) {
 		List<McpAsyncClient> mcpClients = mcpClientsProvider.stream().flatMap(List::stream).toList();
-		return new AsyncMcpToolCallbackProvider(mcpClients);
+		McpAsyncClientToolCallFilter mcpToolCallFilter = mcpToolCallFilterProvider.getIfAvailable(DefaultMcpAsyncClientToolCallFilter::new);
+		return new AsyncMcpToolCallbackProvider(mcpToolCallFilter, mcpClients);
+	}
+
+	@Bean
+	@ConditionalOnProperty(prefix = McpClientCommonProperties.CONFIG_PREFIX, name = "type", havingValue = "ASYNC")
+	public McpAsyncClientToolCallFilter mcpAsyncClientToolCallFilter() {
+		return new DefaultMcpAsyncClientToolCallFilter();
 	}
 
 	public static class McpToolCallbackAutoConfigurationCondition extends AllNestedConditions {
