@@ -619,7 +619,8 @@ public class ZhiPuAiApi {
 			@JsonProperty("role") Role role,
 			@JsonProperty("name") String name,
 			@JsonProperty("tool_call_id") String toolCallId,
-			@JsonProperty("tool_calls") List<ToolCall> toolCalls) {
+			@JsonProperty("tool_calls") List<ToolCall> toolCalls,
+			@JsonProperty("reasoning_content") String reasoningContent) {
 
 		/**
 		 * Create a chat completion message with the given content and role. All other fields are null.
@@ -627,7 +628,7 @@ public class ZhiPuAiApi {
 		 * @param role The role of the author of this message.
 		 */
 		public ChatCompletionMessage(Object content, Role role) {
-			this(content, role, null, null, null);
+			this(content, role, null, null, null, null);
 		}
 
 		/**
