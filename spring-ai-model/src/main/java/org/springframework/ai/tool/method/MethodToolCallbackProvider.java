@@ -19,6 +19,7 @@ package org.springframework.ai.tool.method;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -26,6 +27,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,7 @@ import org.springframework.aop.support.AopUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -53,6 +56,10 @@ public final class MethodToolCallbackProvider implements ToolCallbackProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(MethodToolCallbackProvider.class);
 
+	private static final Map<Method, ToolCallback> METHOD_TOOL_CALLBACKS_CACHE = new ConcurrentReferenceHashMap<>(256);
+
+	private boolean cacheToolCallback = true;
+
 	private final List<Object> toolObjects;
 
 	private MethodToolCallbackProvider(List<Object> toolObjects) {
@@ -61,6 +68,10 @@ public final class MethodToolCallbackProvider implements ToolCallbackProvider {
 		assertToolAnnotatedMethodsPresent(toolObjects);
 		this.toolObjects = toolObjects;
 		validateToolCallbacks(getToolCallbacks());
+	}
+
+	public static Builder builder() {
+		return new Builder();
 	}
 
 	private void assertToolAnnotatedMethodsPresent(List<Object> toolObjects) {
@@ -88,13 +99,9 @@ public final class MethodToolCallbackProvider implements ToolCallbackProvider {
 						AopUtils.isAopProxy(toolObject) ? AopUtils.getTargetClass(toolObject) : toolObject.getClass()))
 				.filter(this::isToolAnnotatedMethod)
 				.filter(toolMethod -> !isFunctionalType(toolMethod))
-				.map(toolMethod -> MethodToolCallback.builder()
-					.toolDefinition(ToolDefinitions.from(toolMethod))
-					.toolMetadata(ToolMetadata.from(toolMethod))
-					.toolMethod(toolMethod)
-					.toolObject(toolObject)
-					.toolCallResultConverter(ToolUtils.getToolCallResultConverter(toolMethod))
-					.build())
+				.map(toolMethod -> cacheToolCallback ?
+						METHOD_TOOL_CALLBACKS_CACHE.computeIfAbsent(toolMethod, MethodToolCallbackProvider::buildMethodToolCallback)
+						: buildMethodToolCallback(toolMethod))
 				.toArray(ToolCallback[]::new))
 			.flatMap(Stream::of)
 			.toArray(ToolCallback[]::new);
@@ -102,6 +109,22 @@ public final class MethodToolCallbackProvider implements ToolCallbackProvider {
 		validateToolCallbacks(toolCallbacks);
 
 		return toolCallbacks;
+	}
+
+	@NotNull
+	private static ToolCallback buildMethodToolCallback(Method method) {
+		return MethodToolCallback.builder()
+				.toolDefinition(ToolDefinitions.from(method))
+				.toolMetadata(ToolMetadata.from(method))
+				.toolMethod(method)
+				.toolObject(method)
+				.toolCallResultConverter(ToolUtils.getToolCallResultConverter(method))
+				.build();
+	}
+
+	public MethodToolCallbackProvider setCacheToolCallback(boolean cacheToolCallback) {
+		this.cacheToolCallback = cacheToolCallback;
+		return this;
 	}
 
 	private boolean isFunctionalType(Method toolMethod) {
@@ -129,10 +152,6 @@ public final class MethodToolCallbackProvider implements ToolCallbackProvider {
 					String.join(", ", duplicateToolNames),
 					this.toolObjects.stream().map(o -> o.getClass().getName()).collect(Collectors.joining(", "))));
 		}
-	}
-
-	public static Builder builder() {
-		return new Builder();
 	}
 
 	public static final class Builder {
