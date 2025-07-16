@@ -247,7 +247,9 @@ Next, create a `ZhiPuAiChatModel` and use it for text generations:
 
 [source,java]
 ----
-var zhiPuAiApi = new ZhiPuAiApi(System.getenv("ZHIPU_AI_API_KEY"));
+var zhiPuAiApi = ZhiPuAiApi.builder()
+                .apiKey(System.getenv("ZHIPU_AI_API_KEY"))
+                .build();
 
 var chatModel = new ZhiPuAiChatModel(this.zhiPuAiApi, ZhiPuAiChatOptions.builder()
                 .model(ZhiPuAiApi.ChatModel.GLM_3_Turbo.getValue())
@@ -274,8 +276,9 @@ Here is a simple snippet how to use the api programmatically:
 
 [source,java]
 ----
-ZhiPuAiApi zhiPuAiApi =
-    new ZhiPuAiApi(System.getenv("ZHIPU_AI_API_KEY"));
+var zhiPuAiApi = ZhiPuAiApi.builder()
+                .apiKey(System.getenv("ZHIPU_AI_API_KEY"))
+                .build();
 
 ChatCompletionMessage chatCompletionMessage =
     new ChatCompletionMessage("Hello world", Role.USER);
