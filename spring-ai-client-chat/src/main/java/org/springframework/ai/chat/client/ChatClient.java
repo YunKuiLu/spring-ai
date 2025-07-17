@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import io.micrometer.observation.ObservationRegistry;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.ai.chat.client.advisor.api.Advisor;
 import org.springframework.ai.chat.client.observation.ChatClientObservationConvention;
@@ -173,6 +174,15 @@ public interface ChatClient {
 	}
 
 	interface StreamResponseSpec {
+
+		@Nullable
+		<T> Mono<T> entity(ParameterizedTypeReference<T> type);
+
+		@Nullable
+		<T> Mono<T> entity(StructuredOutputConverter<T> structuredOutputConverter);
+
+		@Nullable
+		<T> Mono<T> entity(Class<T> type);
 
 		Flux<ChatClientResponse> chatClientResponse();
 

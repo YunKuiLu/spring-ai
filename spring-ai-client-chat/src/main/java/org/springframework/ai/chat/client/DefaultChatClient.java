@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import org.springframework.ai.chat.client.advisor.ChatModelCallAdvisor;
 import org.springframework.ai.chat.client.advisor.ChatModelStreamAdvisor;
@@ -508,20 +510,29 @@ public class DefaultChatClient implements ChatClient {
 		}
 
 		private Flux<ChatClientResponse> doGetObservableFluxChatResponse(ChatClientRequest chatClientRequest) {
+			return doGetObservableFluxChatResponse(chatClientRequest, null);
+		}
+
+		private Flux<ChatClientResponse> doGetObservableFluxChatResponse(ChatClientRequest chatClientRequest, @Nullable String outputFormat) {
+
+			if (outputFormat != null) {
+				chatClientRequest.context().put(ChatClientAttributes.OUTPUT_FORMAT.getKey(), outputFormat);
+			}
 			return Flux.deferContextual(contextView -> {
 
 				ChatClientObservationContext observationContext = ChatClientObservationContext.builder()
-					.request(chatClientRequest)
-					.advisors(this.advisorChain.getStreamAdvisors())
-					.stream(true)
-					.build();
+						.request(chatClientRequest)
+						.advisors(this.advisorChain.getStreamAdvisors())
+						.stream(true)
+						.format(outputFormat)
+						.build();
 
 				Observation observation = ChatClientObservationDocumentation.AI_CHAT_CLIENT.observation(
 						this.observationConvention, DEFAULT_CHAT_CLIENT_OBSERVATION_CONVENTION,
 						() -> observationContext, this.observationRegistry);
 
 				observation.parentObservation(contextView.getOrDefault(ObservationThreadLocalAccessor.KEY, null))
-					.start();
+						.start();
 
 				// @formatter:off
 				// Apply the advisor chain that terminates with the ChatModelStreamAdvisor.
@@ -531,6 +542,38 @@ public class DefaultChatClient implements ChatClient {
 						.contextWrite(ctx -> ctx.put(ObservationThreadLocalAccessor.KEY, observation));
 				// @formatter:on
 			});
+		}
+
+		@Override
+		public <T> Mono<T> entity(ParameterizedTypeReference<T> type) {
+			Assert.notNull(type, "type cannot be null");
+			return doSingleWithBeanOutputConverter(new BeanOutputConverter<>(type));
+		}
+
+		@Override
+		public <T> Mono<T> entity(StructuredOutputConverter<T> structuredOutputConverter) {
+			Assert.notNull(structuredOutputConverter, "structuredOutputConverter cannot be null");
+			return doSingleWithBeanOutputConverter(structuredOutputConverter);
+		}
+
+		@Override
+		public <T> Mono<T> entity(Class<T> type) {
+			Assert.notNull(type, "type cannot be null");
+			var outputConverter = new BeanOutputConverter<>(type);
+			return doSingleWithBeanOutputConverter(outputConverter);
+		}
+
+		private <T> Mono<T> doSingleWithBeanOutputConverter(StructuredOutputConverter<T> outputConverter) {
+			var chatResponse = doGetObservableFluxChatResponse(this.request, outputConverter.getFormat());
+			return chatResponse
+					.mapNotNull(resp -> Optional.ofNullable(resp)
+							.map(ChatClientResponse::chatResponse)
+							.map(ChatResponse::getResult)
+							.map(Generation::getOutput)
+							.map(AbstractMessage::getText)
+							.orElse(""))
+					.collect(Collectors.joining())
+					.mapNotNull(outputConverter::convert);
 		}
 
 		@Override
