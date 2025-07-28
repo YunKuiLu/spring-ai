@@ -320,6 +320,7 @@
 		<!-- testing dependencies -->
 		<okhttp3.version>4.12.0</okhttp3.version>
 		<json-unit-assertj.version>4.1.0</json-unit-assertj.version>
+		<equalsverifier.version>4.0.5</equalsverifier.version>
 
 		<!-- MCP-->
 		<mcp.sdk.version>0.11.0-SNAPSHOT</mcp.sdk.version>
@@ -349,6 +350,10 @@
 		<puppycrawl-tools-checkstyle.version>9.3</puppycrawl-tools-checkstyle.version>
 
 		<disable.checks>true</disable.checks>
+
+		<surefireArgLine>
+			--add-opens java.base/java.util=ALL-UNNAMED
+		</surefireArgLine>
 
 	</properties>
 
