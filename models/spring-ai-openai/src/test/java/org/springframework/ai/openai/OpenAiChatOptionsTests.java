@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.openai.api.OpenAiApi;
@@ -38,6 +39,13 @@ import static org.springframework.ai.openai.api.OpenAiApi.ChatCompletionRequest.
  * @author Alexandros Pappas
  */
 class OpenAiChatOptionsTests {
+
+	@Test
+	void testEqualsAndHashCode() {
+		EqualsVerifier.simple().forClass(OpenAiChatOptions.class)
+				.usingGetClass()
+				.verify();
+	}
 
 	@Test
 	void testBuilderWithAllFields() {

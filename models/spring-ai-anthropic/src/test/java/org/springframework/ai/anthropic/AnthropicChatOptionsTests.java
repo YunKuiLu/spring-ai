@@ -19,6 +19,7 @@ package org.springframework.ai.anthropic;
 import java.util.List;
 import java.util.Map;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.anthropic.api.AnthropicApi.ChatCompletionRequest.Metadata;
@@ -31,6 +32,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Alexandros Pappas
  */
 class AnthropicChatOptionsTests {
+
+	@Test
+	void testEqualsAndHashCode() {
+		EqualsVerifier.simple().forClass(AnthropicChatOptions.class)
+				.usingGetClass()
+				.verify();
+	}
 
 	@Test
 	void testBuilderWithAllFields() {

@@ -326,6 +326,8 @@ public class ZhiPuAiChatOptions implements ToolCallingChatOptions {
 		result = prime * result + ((this.tools == null) ? 0 : this.tools.hashCode());
 		result = prime * result + ((this.toolChoice == null) ? 0 : this.toolChoice.hashCode());
 		result = prime * result + ((this.user == null) ? 0 : this.user.hashCode());
+		result = prime * result + ((this.requestId == null) ? 0 : this.requestId.hashCode());
+		result = prime * result + ((this.doSample == null) ? 0 : this.doSample.hashCode());
 		result = prime * result
 				+ ((this.internalToolExecutionEnabled == null) ? 0 : this.internalToolExecutionEnabled.hashCode());
 		result = prime * result + ((this.toolCallbacks == null) ? 0 : this.toolCallbacks.hashCode());
@@ -432,6 +434,22 @@ public class ZhiPuAiChatOptions implements ToolCallingChatOptions {
 			}
 		}
 		else if (!this.internalToolExecutionEnabled.equals(other.internalToolExecutionEnabled)) {
+			return false;
+		}
+		if (this.toolCallbacks == null) {
+			if (other.toolCallbacks != null) {
+				return false;
+			}
+		}
+		else if (!this.toolCallbacks.equals(other.toolCallbacks)) {
+			return false;
+		}
+		if (this.toolNames == null) {
+			if (other.toolNames != null) {
+				return false;
+			}
+		}
+		else if (!this.toolNames.equals(other.toolNames)) {
 			return false;
 		}
 		if (this.toolContext == null) {

@@ -18,6 +18,7 @@ package org.springframework.ai.elevenlabs;
 
 import java.util.List;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.ai.elevenlabs.api.ElevenLabsApi;
@@ -34,6 +35,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Alexandros Pappas
  */
 public class ElevenLabsTextToSpeechOptionsTests {
+
+	@Test
+	void testEqualsAndHashCode() {
+		EqualsVerifier.simple().forClass(ElevenLabsTextToSpeechOptions.class)
+				.usingGetClass()
+				.verify();
+	}
 
 	@Test
 	public void testBuilderWithAllFields() {

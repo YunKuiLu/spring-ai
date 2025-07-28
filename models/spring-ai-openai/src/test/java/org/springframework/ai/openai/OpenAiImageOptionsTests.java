@@ -16,6 +16,7 @@
 
 package org.springframework.ai.openai;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,6 +28,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Pollack
  */
 class OpenAiImageOptionsTests {
+
+	@Test
+	void testEqualsAndHashCode2() {
+		EqualsVerifier.simple().forClass(OpenAiImageOptions.class)
+				.usingGetClass()
+				.verify();
+	}
 
 	@Test
 	void testBuilderWithAllFields() {

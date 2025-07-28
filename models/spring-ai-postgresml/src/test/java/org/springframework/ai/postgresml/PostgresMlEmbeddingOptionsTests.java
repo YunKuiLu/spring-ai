@@ -18,6 +18,7 @@ package org.springframework.ai.postgresml;
 
 import java.util.Map;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -30,6 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Christian Tzolov
  */
 public class PostgresMlEmbeddingOptionsTests {
+
+	@Test
+	void testEqualsAndHashCode() {
+		EqualsVerifier.simple().forClass(PostgresMlEmbeddingOptions.class)
+				.usingGetClass()
+				.verify();
+	}
 
 	@Test
 	public void defaultOptions() {
