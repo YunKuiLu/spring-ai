@@ -34,9 +34,7 @@ public class PostgresMlEmbeddingOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(PostgresMlEmbeddingOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(PostgresMlEmbeddingOptions.class).usingGetClass().verify();
 	}
 
 	@Test

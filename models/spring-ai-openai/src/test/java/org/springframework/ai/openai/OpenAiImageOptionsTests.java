@@ -31,9 +31,7 @@ class OpenAiImageOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode2() {
-		EqualsVerifier.simple().forClass(OpenAiImageOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(OpenAiImageOptions.class).usingGetClass().verify();
 	}
 
 	@Test

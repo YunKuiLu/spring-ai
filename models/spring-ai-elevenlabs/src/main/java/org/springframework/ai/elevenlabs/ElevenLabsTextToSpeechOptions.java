@@ -269,9 +269,8 @@ public class ElevenLabsTextToSpeechOptions implements TextToSpeechOptions {
 		if (!(o instanceof ElevenLabsTextToSpeechOptions that))
 			return false;
 		return Objects.equals(modelId, that.modelId) && Objects.equals(voiceId, that.voiceId)
-				&& Objects.equals(enableLogging, that.enableLogging)
-				&& Objects.equals(outputFormat, that.outputFormat) && Objects.equals(voiceSettings, that.voiceSettings)
-				&& Objects.equals(languageCode, that.languageCode)
+				&& Objects.equals(enableLogging, that.enableLogging) && Objects.equals(outputFormat, that.outputFormat)
+				&& Objects.equals(voiceSettings, that.voiceSettings) && Objects.equals(languageCode, that.languageCode)
 				&& Objects.equals(pronunciationDictionaryLocators, that.pronunciationDictionaryLocators)
 				&& Objects.equals(seed, that.seed) && Objects.equals(previousText, that.previousText)
 				&& Objects.equals(nextText, that.nextText)

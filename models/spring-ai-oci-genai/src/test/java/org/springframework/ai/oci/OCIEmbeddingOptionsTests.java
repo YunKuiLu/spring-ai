@@ -10,9 +10,7 @@ class OCIEmbeddingOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(OCIEmbeddingOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(OCIEmbeddingOptions.class).usingGetClass().verify();
 	}
 
 }

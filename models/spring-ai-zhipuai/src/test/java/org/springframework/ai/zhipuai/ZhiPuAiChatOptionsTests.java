@@ -10,9 +10,7 @@ class ZhiPuAiChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(ZhiPuAiChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(ZhiPuAiChatOptions.class).usingGetClass().verify();
 	}
 
 }

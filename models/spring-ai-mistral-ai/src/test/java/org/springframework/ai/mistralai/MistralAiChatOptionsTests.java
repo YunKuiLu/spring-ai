@@ -36,9 +36,7 @@ class MistralAiChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(MistralAiChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(MistralAiChatOptions.class).usingGetClass().verify();
 	}
 
 	@Test

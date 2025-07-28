@@ -35,9 +35,7 @@ class AnthropicChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(AnthropicChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(AnthropicChatOptions.class).usingGetClass().verify();
 	}
 
 	@Test

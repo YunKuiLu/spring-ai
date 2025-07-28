@@ -16,6 +16,8 @@
 
 package org.springframework.ai.openai;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -37,6 +39,18 @@ public class OpenAiModerationOptions implements ModerationOptions {
 	 */
 	@JsonProperty("model")
 	private String model = OpenAiModerationApi.DEFAULT_MODERATION_MODEL;
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof OpenAiModerationOptions that))
+			return false;
+		return Objects.equals(model, that.model);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(model);
+	}
 
 	public static Builder builder() {
 		return new Builder();

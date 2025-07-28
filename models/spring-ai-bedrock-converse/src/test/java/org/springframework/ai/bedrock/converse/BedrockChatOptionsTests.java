@@ -33,9 +33,7 @@ class BedrockChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(BedrockChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(BedrockChatOptions.class).usingGetClass().verify();
 	}
 
 	@Test

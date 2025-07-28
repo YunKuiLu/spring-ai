@@ -120,6 +120,8 @@ public class OpenAiAudioTranscriptionOptions implements AudioTranscriptionOption
 		result = prime * result + ((this.prompt == null) ? 0 : this.prompt.hashCode());
 		result = prime * result + ((this.language == null) ? 0 : this.language.hashCode());
 		result = prime * result + ((this.responseFormat == null) ? 0 : this.responseFormat.hashCode());
+		result = prime * result + ((this.temperature == null) ? 0 : this.temperature.hashCode());
+		result = prime * result + ((this.granularityType == null) ? 0 : this.granularityType.hashCode());
 		return result;
 	}
 
@@ -165,6 +167,21 @@ public class OpenAiAudioTranscriptionOptions implements AudioTranscriptionOption
 			}
 		}
 		else if (!this.responseFormat.equals(other.responseFormat)) {
+			return false;
+		}
+		if (this.temperature == null){
+			if (other.temperature != null){
+				return false;
+			}
+		}
+		else if (!this.temperature.equals(other.temperature)){
+			return false;
+		}
+		if (this.granularityType == null){
+			if (other.granularityType != null){
+				return false;
+			}
+		}else if (!this.granularityType.equals(other.granularityType)){
 			return false;
 		}
 		return true;

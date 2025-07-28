@@ -38,9 +38,7 @@ public class ElevenLabsTextToSpeechOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(ElevenLabsTextToSpeechOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(ElevenLabsTextToSpeechOptions.class).usingGetClass().verify();
 	}
 
 	@Test

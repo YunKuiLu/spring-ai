@@ -10,9 +10,7 @@ class GoogleGenAiChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(GoogleGenAiChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(GoogleGenAiChatOptions.class).usingGetClass().verify();
 	}
 
 }

@@ -37,9 +37,7 @@ class AzureOpenAiChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(AzureOpenAiChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(AzureOpenAiChatOptions.class).usingGetClass().verify();
 	}
 
 	@Test

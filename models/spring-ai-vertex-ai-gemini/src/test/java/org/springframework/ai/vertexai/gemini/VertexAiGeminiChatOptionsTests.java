@@ -10,9 +10,7 @@ class VertexAiGeminiChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(VertexAiGeminiChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(VertexAiGeminiChatOptions.class).usingGetClass().verify();
 	}
 
 }

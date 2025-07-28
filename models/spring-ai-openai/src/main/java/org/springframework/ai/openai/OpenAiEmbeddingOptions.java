@@ -16,6 +16,8 @@
 
 package org.springframework.ai.openai;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -50,6 +52,19 @@ public class OpenAiEmbeddingOptions implements EmbeddingOptions {
 	 */
 	private @JsonProperty("user") String user;
 	// @formatter:on
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof OpenAiEmbeddingOptions that))
+			return false;
+		return Objects.equals(model, that.model) && Objects.equals(encodingFormat, that.encodingFormat)
+				&& Objects.equals(dimensions, that.dimensions) && Objects.equals(user, that.user);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(model, encodingFormat, dimensions, user);
+	}
 
 	public static Builder builder() {
 		return new Builder();

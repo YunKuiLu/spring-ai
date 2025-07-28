@@ -37,9 +37,7 @@ class MiniMaxChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(MiniMaxChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(MiniMaxChatOptions.class).usingGetClass().verify();
 	}
 
 	@Test

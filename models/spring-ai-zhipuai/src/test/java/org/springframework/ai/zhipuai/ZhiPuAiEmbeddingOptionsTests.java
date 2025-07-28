@@ -10,9 +10,7 @@ class ZhiPuAiEmbeddingOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(ZhiPuAiEmbeddingOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(ZhiPuAiEmbeddingOptions.class).usingGetClass().verify();
 	}
 
 }

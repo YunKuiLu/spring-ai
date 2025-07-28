@@ -42,9 +42,7 @@ class OpenAiChatOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(OpenAiChatOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(OpenAiChatOptions.class).usingGetClass().verify();
 	}
 
 	@Test

@@ -30,9 +30,7 @@ public class StabilityAiImageOptionsTests {
 
 	@Test
 	void testEqualsAndHashCode() {
-		EqualsVerifier.simple().forClass(StabilityAiImageOptions.class)
-				.usingGetClass()
-				.verify();
+		EqualsVerifier.simple().forClass(StabilityAiImageOptions.class).usingGetClass().verify();
 	}
 
 	@Test
