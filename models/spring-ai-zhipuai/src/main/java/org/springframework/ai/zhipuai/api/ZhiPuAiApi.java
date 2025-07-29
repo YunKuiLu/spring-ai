@@ -16,10 +16,8 @@
 
 package org.springframework.ai.zhipuai.api;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -459,6 +457,20 @@ public class ZhiPuAiApi {
 
 	}
 
+
+	/**
+	 * Controls whether the large model uses chain-of-thought reasoning.
+	 * @param type
+	 */
+	@JsonInclude(Include.NON_NULL)
+	public record Thinking(// @formatter:off
+			@JsonProperty("max_tokens") String type) { // @formatter:on
+
+		private Thinking {
+
+		}
+	}
+
 	/**
 	 * Represents a tool the model may call. Currently, only functions are supported as a
 	 * tool.
@@ -655,6 +667,7 @@ public class ZhiPuAiApi {
 			@JsonProperty("max_tokens") Integer maxTokens,
 			@JsonProperty("stop") List<String> stop,
 			@JsonProperty("stream") Boolean stream,
+			@JsonProperty("thinking") Thinking thinking,
 			@JsonProperty("temperature") Double temperature,
 			@JsonProperty("top_p") Double topP,
 			@JsonProperty("tools") List<FunctionTool> tools,
@@ -671,7 +684,7 @@ public class ZhiPuAiApi {
 		 * @param temperature What sampling temperature to use, between 0 and 1.
 		 */
 		public ChatCompletionRequest(List<ChatCompletionMessage> messages, String model, Double temperature) {
-			this(messages, model, null, null, false, temperature, null, null, null, null, null, null);
+			this(messages, model, null, null, false, null, temperature, null, null, null, null, null, null);
 		}
 
 		/**
@@ -686,7 +699,7 @@ public class ZhiPuAiApi {
 		 */
 		public ChatCompletionRequest(List<ChatCompletionMessage> messages, String model, Double temperature,
 				boolean stream) {
-			this(messages, model, null, null, stream, temperature, null, null, null, null, null, null);
+			this(messages, model, null, null, stream, null, temperature, null, null, null, null, null, null);
 		}
 
 		/**
@@ -701,7 +714,7 @@ public class ZhiPuAiApi {
 		 */
 		public ChatCompletionRequest(List<ChatCompletionMessage> messages, String model, List<FunctionTool> tools,
 				Object toolChoice) {
-			this(messages, model, null, null, false, 0.8, null, tools, toolChoice, null, null, null);
+			this(messages, model, null, null, false, null, 0.8, null, tools, toolChoice, null, null, null);
 		}
 
 		/**
@@ -714,7 +727,7 @@ public class ZhiPuAiApi {
 		 * terminated by a data: [DONE] message.
 		 */
 		public ChatCompletionRequest(List<ChatCompletionMessage> messages, Boolean stream) {
-			this(messages, null, null, null, stream, null, null, null, null, null, null, null);
+			this(messages, null, null, null, stream, null, null, null, null, null, null, null, null);
 		}
 
 		/**
