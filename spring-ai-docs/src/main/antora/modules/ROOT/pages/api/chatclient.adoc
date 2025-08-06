@@ -361,11 +361,15 @@ After specifying the `call()` method on `ChatClient`, there are a few different 
 * `String content()`: returns the String content of the response
 * `ChatResponse chatResponse()`: returns the `ChatResponse` object that contains multiple generations and also metadata about the response, for example how many token were used to create the response.
 * `ChatClientResponse chatClientResponse()`: returns a `ChatClientResponse` object that contains the `ChatResponse` object and the ChatClient execution context, giving you access to additional data used during the execution of advisors (e.g. the relevant documents retrieved in a RAG flow).
-* `ResponseEntity<?> responseEntity()`: returns a `ResponseEntity` containing the full HTTP response, including status code, headers, and body. This is useful when you need access to low-level HTTP details of the response.
-* `entity()` to return a Java type
+* `entity()` to return a Java type:
+** `entity(Class<T> type)`: used to return a specific entity type.
 ** `entity(ParameterizedTypeReference<T> type)`: used to return a `Collection` of entity types.
-** `entity(Class<T> type)`:  used to return a specific entity type.
 ** `entity(StructuredOutputConverter<T> structuredOutputConverter)`: used to specify an instance of a `StructuredOutputConverter` to convert a `String` to an entity type.
+* `responseEntity()` to return a `ResponseEntity` object that contains both the `ChatResponse` object and the converted Java entity:
+** `responseEntity(Class<T> type)`: used to return a specific entity type.
+** `responseEntity(ParameterizedTypeReference<T> type)`: used to return a `Collection` of entity types.
+** `responseEntity(StructuredOutputConverter<T> structuredOutputConverter)`: used to specify an instance of a `StructuredOutputConverter` to convert a `String` to an entity type and obtain a `ChatResponse` object.
+
 
 You can also invoke the `stream()` method instead of `call()`.
 
@@ -488,9 +492,9 @@ At the `ChatClient.Builder` level, you can specify the default prompt configurat
 
 * `defaultOptions(ChatOptions chatOptions)`: Pass in either portable options defined in the `ChatOptions` class or model-specific options such as those in `OpenAiChatOptions`. For more information on model-specific `ChatOptions` implementations, refer to the JavaDocs.
 
-* `defaultFunction(String name, String description, java.util.function.Function<I, O> function)`: The `name` is used to refer to the function in user text. The `description` explains the function's purpose and helps the AI model choose the correct function for an accurate response. The `function` argument is a Java function instance that the model will execute when necessary.
+* `defaultToolCallbacks(ToolCallback... toolCallbacks)`: Specifies the `ToolCallback` instances to be used by the `ChatClient`.
 
-* `defaultFunctions(String... functionNames)`: The bean names of `java.util.Function`s defined in the application context.
+* `defaultToolNames(String... toolNames)`: The bean names of `java.util.Function`s defined in the application context.
 
 * `defaultUser(String text)`, `defaultUser(Resource text)`, `defaultUser(Consumer<UserSpec> userSpecConsumer)`: These methods let you define the user text. The `Consumer<UserSpec>` allows you to use a lambda to specify the user text and any default parameters.
 
@@ -502,10 +506,9 @@ You can override these defaults at runtime using the corresponding methods witho
 
 * `options(ChatOptions chatOptions)`
 
-* `function(String name, String description,
-java.util.function.Function<I, O> function)`
+* `toolCallbacks(ToolCallback... toolCallbacks)`, `toolCallbacks(List<ToolCallback> toolCallbacks)`, `toolCallbacks(ToolCallbackProvider... toolCallbackProviders)`
 
-* `functions(String... functionNames)`
+* `toolNames(String... toolNames)`
 
 * `user(String text)`, `user(Resource text)`, `user(Consumer<UserSpec> userSpecConsumer)`
 
